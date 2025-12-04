@@ -391,7 +391,7 @@ pub const PTHREAD_PROCESS_PRIVATE: c_int = 0;
 pub const PTHREAD_PROCESS_SHARED: c_int = 1;
 const enum_unnamed_11 = c_uint;
 pub const struct__pthread_cleanup_buffer = extern struct {
-    __routine: ?*const fn (?*anyopaque) callconv(.C) void = @import("std").mem.zeroes(?*const fn (?*anyopaque) callconv(.C) void),
+    __routine: ?*const fn (?*anyopaque) callconv(.c) void = @import("std").mem.zeroes(?*const fn (?*anyopaque) callconv(.c) void),
     __arg: ?*anyopaque = @import("std").mem.zeroes(?*anyopaque),
     __canceltype: c_int = @import("std").mem.zeroes(c_int),
     __prev: [*c]struct__pthread_cleanup_buffer = @import("std").mem.zeroes([*c]struct__pthread_cleanup_buffer),
@@ -402,7 +402,7 @@ const enum_unnamed_12 = c_uint;
 pub const PTHREAD_CANCEL_DEFERRED: c_int = 0;
 pub const PTHREAD_CANCEL_ASYNCHRONOUS: c_int = 1;
 const enum_unnamed_13 = c_uint;
-pub extern fn pthread_create(noalias __newthread: [*c]pthread_t, noalias __attr: [*c]const pthread_attr_t, __start_routine: ?*const fn (?*anyopaque) callconv(.C) ?*anyopaque, noalias __arg: ?*anyopaque) c_int;
+pub extern fn pthread_create(noalias __newthread: [*c]pthread_t, noalias __attr: [*c]const pthread_attr_t, __start_routine: ?*const fn (?*anyopaque) callconv(.c) ?*anyopaque, noalias __arg: ?*anyopaque) c_int;
 pub extern fn pthread_exit(__retval: ?*anyopaque) noreturn;
 pub extern fn pthread_join(__th: pthread_t, __thread_return: [*c]?*anyopaque) c_int;
 pub extern fn pthread_detach(__th: pthread_t) c_int;
@@ -431,7 +431,7 @@ pub extern fn pthread_attr_setstack(__attr: [*c]pthread_attr_t, __stackaddr: ?*a
 pub extern fn pthread_setschedparam(__target_thread: pthread_t, __policy: c_int, __param: [*c]const struct_sched_param) c_int;
 pub extern fn pthread_getschedparam(__target_thread: pthread_t, noalias __policy: [*c]c_int, noalias __param: [*c]struct_sched_param) c_int;
 pub extern fn pthread_setschedprio(__target_thread: pthread_t, __prio: c_int) c_int;
-pub extern fn pthread_once(__once_control: [*c]pthread_once_t, __init_routine: ?*const fn () callconv(.C) void) c_int;
+pub extern fn pthread_once(__once_control: [*c]pthread_once_t, __init_routine: ?*const fn () callconv(.c) void) c_int;
 pub extern fn pthread_setcancelstate(__state: c_int, __oldstate: [*c]c_int) c_int;
 pub extern fn pthread_setcanceltype(__type: c_int, __oldtype: [*c]c_int) c_int;
 pub extern fn pthread_cancel(__th: pthread_t) c_int;
@@ -445,7 +445,7 @@ pub const __pthread_unwind_buf_t = extern struct {
     __pad: [4]?*anyopaque = @import("std").mem.zeroes([4]?*anyopaque),
 };
 pub const struct___pthread_cleanup_frame = extern struct {
-    __cancel_routine: ?*const fn (?*anyopaque) callconv(.C) void = @import("std").mem.zeroes(?*const fn (?*anyopaque) callconv(.C) void),
+    __cancel_routine: ?*const fn (?*anyopaque) callconv(.c) void = @import("std").mem.zeroes(?*const fn (?*anyopaque) callconv(.c) void),
     __cancel_arg: ?*anyopaque = @import("std").mem.zeroes(?*anyopaque),
     __do_it: c_int = @import("std").mem.zeroes(c_int),
     __cancel_type: c_int = @import("std").mem.zeroes(c_int),
@@ -514,12 +514,12 @@ pub extern fn pthread_barrierattr_init(__attr: [*c]pthread_barrierattr_t) c_int;
 pub extern fn pthread_barrierattr_destroy(__attr: [*c]pthread_barrierattr_t) c_int;
 pub extern fn pthread_barrierattr_getpshared(noalias __attr: [*c]const pthread_barrierattr_t, noalias __pshared: [*c]c_int) c_int;
 pub extern fn pthread_barrierattr_setpshared(__attr: [*c]pthread_barrierattr_t, __pshared: c_int) c_int;
-pub extern fn pthread_key_create(__key: [*c]pthread_key_t, __destr_function: ?*const fn (?*anyopaque) callconv(.C) void) c_int;
+pub extern fn pthread_key_create(__key: [*c]pthread_key_t, __destr_function: ?*const fn (?*anyopaque) callconv(.c) void) c_int;
 pub extern fn pthread_key_delete(__key: pthread_key_t) c_int;
 pub extern fn pthread_getspecific(__key: pthread_key_t) ?*anyopaque;
 pub extern fn pthread_setspecific(__key: pthread_key_t, __pointer: ?*const anyopaque) c_int;
 pub extern fn pthread_getcpuclockid(__thread_id: pthread_t, __clock_id: [*c]__clockid_t) c_int;
-pub extern fn pthread_atfork(__prepare: ?*const fn () callconv(.C) void, __parent: ?*const fn () callconv(.C) void, __child: ?*const fn () callconv(.C) void) c_int;
+pub extern fn pthread_atfork(__prepare: ?*const fn () callconv(.c) void, __parent: ?*const fn () callconv(.c) void, __child: ?*const fn () callconv(.c) void) c_int;
 pub const u_char = __u_char;
 pub const u_short = __u_short;
 pub const u_int = __u_int;
@@ -547,32 +547,32 @@ pub const u_int16_t = __uint16_t;
 pub const u_int32_t = __uint32_t;
 pub const u_int64_t = __uint64_t;
 pub const register_t = c_long;
-pub fn __bswap_16(arg___bsx: __uint16_t) callconv(.C) __uint16_t {
+pub fn __bswap_16(arg___bsx: __uint16_t) callconv(.c) __uint16_t {
     var __bsx = arg___bsx;
     _ = &__bsx;
     return @as(__uint16_t, @bitCast(@as(c_short, @truncate(((@as(c_int, @bitCast(@as(c_uint, __bsx))) >> @intCast(8)) & @as(c_int, 255)) | ((@as(c_int, @bitCast(@as(c_uint, __bsx))) & @as(c_int, 255)) << @intCast(8))))));
 }
-pub fn __bswap_32(arg___bsx: __uint32_t) callconv(.C) __uint32_t {
+pub fn __bswap_32(arg___bsx: __uint32_t) callconv(.c) __uint32_t {
     var __bsx = arg___bsx;
     _ = &__bsx;
     return ((((__bsx & @as(c_uint, 4278190080)) >> @intCast(24)) | ((__bsx & @as(c_uint, 16711680)) >> @intCast(8))) | ((__bsx & @as(c_uint, 65280)) << @intCast(8))) | ((__bsx & @as(c_uint, 255)) << @intCast(24));
 }
-pub fn __bswap_64(arg___bsx: __uint64_t) callconv(.C) __uint64_t {
+pub fn __bswap_64(arg___bsx: __uint64_t) callconv(.c) __uint64_t {
     var __bsx = arg___bsx;
     _ = &__bsx;
     return @as(__uint64_t, @bitCast(@as(c_ulong, @truncate(((((((((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 18374686479671623680)) >> @intCast(56)) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 71776119061217280)) >> @intCast(40))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 280375465082880)) >> @intCast(24))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 1095216660480)) >> @intCast(8))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 4278190080)) << @intCast(8))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 16711680)) << @intCast(24))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 65280)) << @intCast(40))) | ((@as(c_ulonglong, @bitCast(@as(c_ulonglong, __bsx))) & @as(c_ulonglong, 255)) << @intCast(56))))));
 }
-pub fn __uint16_identity(arg___x: __uint16_t) callconv(.C) __uint16_t {
+pub fn __uint16_identity(arg___x: __uint16_t) callconv(.c) __uint16_t {
     var __x = arg___x;
     _ = &__x;
     return __x;
 }
-pub fn __uint32_identity(arg___x: __uint32_t) callconv(.C) __uint32_t {
+pub fn __uint32_identity(arg___x: __uint32_t) callconv(.c) __uint32_t {
     var __x = arg___x;
     _ = &__x;
     return __x;
 }
-pub fn __uint64_identity(arg___x: __uint64_t) callconv(.C) __uint64_t {
+pub fn __uint64_identity(arg___x: __uint64_t) callconv(.c) __uint64_t {
     var __x = arg___x;
     _ = &__x;
     return __x;
@@ -664,11 +664,11 @@ pub const MDBX_DBG_DONT_UPGRADE: c_int = 64;
 pub const MDBX_DBG_DONTCHANGE: c_int = -1;
 pub const enum_MDBX_debug_flags = c_int;
 pub const MDBX_debug_flags_t = enum_MDBX_debug_flags;
-pub const MDBX_debug_func = fn (MDBX_log_level_t, [*c]const u8, c_int, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) void;
+pub const MDBX_debug_func = fn (MDBX_log_level_t, [*c]const u8, c_int, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) void;
 pub extern fn mdbx_setup_debug(log_level: MDBX_log_level_t, debug_flags: MDBX_debug_flags_t, logger: ?*const MDBX_debug_func) c_int;
-pub const MDBX_debug_func_nofmt = fn (MDBX_log_level_t, [*c]const u8, c_int, [*c]const u8, c_uint) callconv(.C) void;
+pub const MDBX_debug_func_nofmt = fn (MDBX_log_level_t, [*c]const u8, c_int, [*c]const u8, c_uint) callconv(.c) void;
 pub extern fn mdbx_setup_debug_nofmt(log_level: MDBX_log_level_t, debug_flags: MDBX_debug_flags_t, logger: ?*const MDBX_debug_func_nofmt, logger_buffer: [*c]u8, logger_buffer_size: usize) c_int;
-pub const MDBX_assert_func = fn (?*const MDBX_env, [*c]const u8, [*c]const u8, c_uint) callconv(.C) void;
+pub const MDBX_assert_func = fn (?*const MDBX_env, [*c]const u8, [*c]const u8, c_uint) callconv(.c) void;
 pub extern fn mdbx_env_set_assert(env: ?*MDBX_env, func: ?*const MDBX_assert_func) c_int;
 pub extern fn mdbx_dump_val(key: [*c]const MDBX_val, buf: [*c]u8, bufsize: usize) [*c]const u8;
 pub extern fn mdbx_panic(fmt: [*c]const u8, ...) noreturn;
@@ -835,7 +835,7 @@ pub const MDBX_EREMOTE: c_int = 15;
 pub const MDBX_EDEADLK: c_int = 35;
 pub const enum_MDBX_error = c_int;
 pub const MDBX_error_t = enum_MDBX_error;
-pub fn MDBX_MAP_RESIZED_is_deprecated() callconv(.C) c_int {
+pub fn MDBX_MAP_RESIZED_is_deprecated() callconv(.c) c_int {
     return MDBX_UNABLE_EXTEND_MAPSIZE;
 }
 pub extern fn mdbx_strerror(errnum: c_int) [*c]const u8;
@@ -889,7 +889,7 @@ pub const struct_MDBX_stat = extern struct {
 };
 pub const MDBX_stat = struct_MDBX_stat;
 pub extern fn mdbx_env_stat_ex(env: ?*const MDBX_env, txn: ?*const MDBX_txn, stat: [*c]MDBX_stat, bytes: usize) c_int;
-pub fn mdbx_env_stat(arg_env: ?*const MDBX_env, arg_stat: [*c]MDBX_stat, arg_bytes: usize) callconv(.C) c_int {
+pub fn mdbx_env_stat(arg_env: ?*const MDBX_env, arg_stat: [*c]MDBX_stat, arg_bytes: usize) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var stat = arg_stat;
@@ -956,7 +956,7 @@ pub const struct_MDBX_envinfo = extern struct {
 };
 pub const MDBX_envinfo = struct_MDBX_envinfo;
 pub extern fn mdbx_env_info_ex(env: ?*const MDBX_env, txn: ?*const MDBX_txn, info: [*c]MDBX_envinfo, bytes: usize) c_int;
-pub fn mdbx_env_info(arg_env: ?*const MDBX_env, arg_info: [*c]MDBX_envinfo, arg_bytes: usize) callconv(.C) c_int {
+pub fn mdbx_env_info(arg_env: ?*const MDBX_env, arg_info: [*c]MDBX_envinfo, arg_bytes: usize) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var info = arg_info;
@@ -966,24 +966,24 @@ pub fn mdbx_env_info(arg_env: ?*const MDBX_env, arg_info: [*c]MDBX_envinfo, arg_
     return mdbx_env_info_ex(env, null, info, bytes);
 }
 pub extern fn mdbx_env_sync_ex(env: ?*MDBX_env, force: bool, nonblock: bool) c_int;
-pub fn mdbx_env_sync(arg_env: ?*MDBX_env) callconv(.C) c_int {
+pub fn mdbx_env_sync(arg_env: ?*MDBX_env) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     return mdbx_env_sync_ex(env, @as(c_int, 1) != 0, @as(c_int, 0) != 0);
 }
-pub fn mdbx_env_sync_poll(arg_env: ?*MDBX_env) callconv(.C) c_int {
+pub fn mdbx_env_sync_poll(arg_env: ?*MDBX_env) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     return mdbx_env_sync_ex(env, @as(c_int, 0) != 0, @as(c_int, 1) != 0);
 }
-pub fn mdbx_env_set_syncbytes(arg_env: ?*MDBX_env, arg_threshold: usize) callconv(.C) c_int {
+pub fn mdbx_env_set_syncbytes(arg_env: ?*MDBX_env, arg_threshold: usize) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var threshold = arg_threshold;
     _ = &threshold;
     return mdbx_env_set_option(env, @as(c_uint, @bitCast(MDBX_opt_sync_bytes)), threshold);
 }
-pub fn mdbx_env_get_syncbytes(arg_env: ?*const MDBX_env, arg_threshold: [*c]usize) callconv(.C) c_int {
+pub fn mdbx_env_get_syncbytes(arg_env: ?*const MDBX_env, arg_threshold: [*c]usize) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var threshold = arg_threshold;
@@ -1006,14 +1006,14 @@ pub fn mdbx_env_get_syncbytes(arg_env: ?*const MDBX_env, arg_threshold: [*c]usiz
     }
     return rc;
 }
-pub fn mdbx_env_set_syncperiod(arg_env: ?*MDBX_env, arg_seconds_16dot16: c_uint) callconv(.C) c_int {
+pub fn mdbx_env_set_syncperiod(arg_env: ?*MDBX_env, arg_seconds_16dot16: c_uint) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var seconds_16dot16 = arg_seconds_16dot16;
     _ = &seconds_16dot16;
     return mdbx_env_set_option(env, @as(c_uint, @bitCast(MDBX_opt_sync_period)), @as(u64, @bitCast(@as(c_ulong, seconds_16dot16))));
 }
-pub fn mdbx_env_get_syncperiod(arg_env: ?*const MDBX_env, arg_period_seconds_16dot16: [*c]c_uint) callconv(.C) c_int {
+pub fn mdbx_env_get_syncperiod(arg_env: ?*const MDBX_env, arg_period_seconds_16dot16: [*c]c_uint) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var period_seconds_16dot16 = arg_period_seconds_16dot16;
@@ -1037,7 +1037,7 @@ pub fn mdbx_env_get_syncperiod(arg_env: ?*const MDBX_env, arg_period_seconds_16d
     return rc;
 }
 pub extern fn mdbx_env_close_ex(env: ?*MDBX_env, dont_sync: bool) c_int;
-pub fn mdbx_env_close(arg_env: ?*MDBX_env) callconv(.C) c_int {
+pub fn mdbx_env_close(arg_env: ?*MDBX_env) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     return mdbx_env_close_ex(env, @as(c_int, 0) != 0);
@@ -1057,7 +1057,7 @@ pub extern fn mdbx_env_get_flags(env: ?*const MDBX_env, flags: [*c]c_uint) c_int
 pub extern fn mdbx_env_get_path(env: ?*const MDBX_env, dest: [*c][*c]const u8) c_int;
 pub extern fn mdbx_env_get_fd(env: ?*const MDBX_env, fd: [*c]mdbx_filehandle_t) c_int;
 pub extern fn mdbx_env_set_geometry(env: ?*MDBX_env, size_lower: isize, size_now: isize, size_upper: isize, growth_step: isize, shrink_threshold: isize, pagesize: isize) c_int;
-pub fn mdbx_env_set_mapsize(arg_env: ?*MDBX_env, arg_size: usize) callconv(.C) c_int {
+pub fn mdbx_env_set_mapsize(arg_env: ?*MDBX_env, arg_size: usize) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var size = arg_size;
@@ -1065,10 +1065,10 @@ pub fn mdbx_env_set_mapsize(arg_env: ?*MDBX_env, arg_size: usize) callconv(.C) c
     return mdbx_env_set_geometry(env, @as(isize, @bitCast(size)), @as(isize, @bitCast(size)), @as(isize, @bitCast(size)), @as(isize, @bitCast(@as(c_long, -@as(c_int, 1)))), @as(isize, @bitCast(@as(c_long, -@as(c_int, 1)))), @as(isize, @bitCast(@as(c_long, -@as(c_int, 1)))));
 }
 pub extern fn mdbx_is_readahead_reasonable(volume: usize, redundancy: isize) c_int;
-pub fn mdbx_limits_pgsize_min() callconv(.C) isize {
+pub fn mdbx_limits_pgsize_min() callconv(.c) isize {
     return @as(isize, @bitCast(@as(c_long, MDBX_MIN_PAGESIZE)));
 }
-pub fn mdbx_limits_pgsize_max() callconv(.C) isize {
+pub fn mdbx_limits_pgsize_max() callconv(.c) isize {
     return @as(isize, @bitCast(@as(c_long, MDBX_MAX_PAGESIZE)));
 }
 pub extern fn mdbx_limits_dbsize_min(pagesize: isize) isize;
@@ -1080,14 +1080,14 @@ pub extern fn mdbx_limits_valsize_min(flags: MDBX_db_flags_t) isize;
 pub extern fn mdbx_limits_pairsize4page_max(pagesize: isize, flags: MDBX_db_flags_t) isize;
 pub extern fn mdbx_limits_valsize4page_max(pagesize: isize, flags: MDBX_db_flags_t) isize;
 pub extern fn mdbx_limits_txnsize_max(pagesize: isize) isize;
-pub fn mdbx_env_set_maxreaders(arg_env: ?*MDBX_env, arg_readers: c_uint) callconv(.C) c_int {
+pub fn mdbx_env_set_maxreaders(arg_env: ?*MDBX_env, arg_readers: c_uint) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var readers = arg_readers;
     _ = &readers;
     return mdbx_env_set_option(env, @as(c_uint, @bitCast(MDBX_opt_max_readers)), @as(u64, @bitCast(@as(u64, readers))));
 }
-pub fn mdbx_env_get_maxreaders(arg_env: ?*const MDBX_env, arg_readers: [*c]c_uint) callconv(.C) c_int {
+pub fn mdbx_env_get_maxreaders(arg_env: ?*const MDBX_env, arg_readers: [*c]c_uint) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var readers = arg_readers;
@@ -1102,14 +1102,14 @@ pub fn mdbx_env_get_maxreaders(arg_env: ?*const MDBX_env, arg_readers: [*c]c_uin
     }
     return rc;
 }
-pub fn mdbx_env_set_maxdbs(arg_env: ?*MDBX_env, arg_dbs: MDBX_dbi) callconv(.C) c_int {
+pub fn mdbx_env_set_maxdbs(arg_env: ?*MDBX_env, arg_dbs: MDBX_dbi) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var dbs = arg_dbs;
     _ = &dbs;
     return mdbx_env_set_option(env, @as(c_uint, @bitCast(MDBX_opt_max_db)), @as(u64, @bitCast(@as(u64, dbs))));
 }
-pub fn mdbx_env_get_maxdbs(arg_env: ?*const MDBX_env, arg_dbs: [*c]MDBX_dbi) callconv(.C) c_int {
+pub fn mdbx_env_get_maxdbs(arg_env: ?*const MDBX_env, arg_dbs: [*c]MDBX_dbi) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var dbs = arg_dbs;
@@ -1134,7 +1134,7 @@ pub extern fn mdbx_env_get_valsize4page_max(env: ?*const MDBX_env, flags: MDBX_d
 pub extern fn mdbx_env_set_userctx(env: ?*MDBX_env, ctx: ?*anyopaque) c_int;
 pub extern fn mdbx_env_get_userctx(env: ?*const MDBX_env) ?*anyopaque;
 pub extern fn mdbx_txn_begin_ex(env: ?*MDBX_env, parent: ?*MDBX_txn, flags: MDBX_txn_flags_t, txn: [*c]?*MDBX_txn, context: ?*anyopaque) c_int;
-pub fn mdbx_txn_begin(arg_env: ?*MDBX_env, arg_parent: ?*MDBX_txn, arg_flags: MDBX_txn_flags_t, arg_txn: [*c]?*MDBX_txn) callconv(.C) c_int {
+pub fn mdbx_txn_begin(arg_env: ?*MDBX_env, arg_parent: ?*MDBX_txn, arg_flags: MDBX_txn_flags_t, arg_txn: [*c]?*MDBX_txn) callconv(.c) c_int {
     var env = arg_env;
     _ = &env;
     var parent = arg_parent;
@@ -1194,7 +1194,7 @@ pub const struct_MDBX_commit_latency = extern struct {
 };
 pub const MDBX_commit_latency = struct_MDBX_commit_latency;
 pub extern fn mdbx_txn_commit_ex(txn: ?*MDBX_txn, latency: [*c]MDBX_commit_latency) c_int;
-pub fn mdbx_txn_commit(arg_txn: ?*MDBX_txn) callconv(.C) c_int {
+pub fn mdbx_txn_commit(arg_txn: ?*MDBX_txn) callconv(.c) c_int {
     var txn = arg_txn;
     _ = &txn;
     return mdbx_txn_commit_ex(txn, null);
@@ -1214,25 +1214,25 @@ pub const struct_MDBX_canary = extern struct {
 pub const MDBX_canary = struct_MDBX_canary;
 pub extern fn mdbx_canary_put(txn: ?*MDBX_txn, canary: [*c]const MDBX_canary) c_int;
 pub extern fn mdbx_canary_get(txn: ?*const MDBX_txn, canary: [*c]MDBX_canary) c_int;
-pub const MDBX_cmp_func = fn ([*c]const MDBX_val, [*c]const MDBX_val) callconv(.C) c_int;
+pub const MDBX_cmp_func = fn ([*c]const MDBX_val, [*c]const MDBX_val) callconv(.c) c_int;
 pub extern fn mdbx_dbi_open(txn: ?*MDBX_txn, name: [*c]const u8, flags: MDBX_db_flags_t, dbi: [*c]MDBX_dbi) c_int;
 pub extern fn mdbx_dbi_open2(txn: ?*MDBX_txn, name: [*c]const MDBX_val, flags: MDBX_db_flags_t, dbi: [*c]MDBX_dbi) c_int;
 pub extern fn mdbx_dbi_open_ex(txn: ?*MDBX_txn, name: [*c]const u8, flags: MDBX_db_flags_t, dbi: [*c]MDBX_dbi, keycmp: ?*const MDBX_cmp_func, datacmp: ?*const MDBX_cmp_func) c_int;
 pub extern fn mdbx_dbi_open_ex2(txn: ?*MDBX_txn, name: [*c]const MDBX_val, flags: MDBX_db_flags_t, dbi: [*c]MDBX_dbi, keycmp: ?*const MDBX_cmp_func, datacmp: ?*const MDBX_cmp_func) c_int;
 pub extern fn mdbx_dbi_rename(txn: ?*MDBX_txn, dbi: MDBX_dbi, name: [*c]const u8) c_int;
 pub extern fn mdbx_dbi_rename2(txn: ?*MDBX_txn, dbi: MDBX_dbi, name: [*c]const MDBX_val) c_int;
-pub const MDBX_table_enum_func = fn (?*anyopaque, ?*const MDBX_txn, [*c]const MDBX_val, MDBX_db_flags_t, [*c]const struct_MDBX_stat, MDBX_dbi) callconv(.C) c_int;
+pub const MDBX_table_enum_func = fn (?*anyopaque, ?*const MDBX_txn, [*c]const MDBX_val, MDBX_db_flags_t, [*c]const struct_MDBX_stat, MDBX_dbi) callconv(.c) c_int;
 pub extern fn mdbx_enumerate_tables(txn: ?*const MDBX_txn, func: ?*const MDBX_table_enum_func, ctx: ?*anyopaque) c_int;
 pub extern fn mdbx_key_from_jsonInteger(json_integer: i64) u64;
 pub extern fn mdbx_key_from_double(ieee754_64bit: f64) u64;
 pub extern fn mdbx_key_from_ptrdouble(ieee754_64bit: [*c]const f64) u64;
 pub extern fn mdbx_key_from_float(ieee754_32bit: f32) u32;
 pub extern fn mdbx_key_from_ptrfloat(ieee754_32bit: [*c]const f32) u32;
-pub fn mdbx_key_from_int64(@"i64": i64) callconv(.C) u64 {
+pub fn mdbx_key_from_int64(@"i64": i64) callconv(.c) u64 {
     _ = &@"i64";
     return @as(c_ulong, 9223372036854775808) +% @as(c_ulong, @bitCast(@"i64"));
 }
-pub fn mdbx_key_from_int32(@"i32": i32) callconv(.C) u32 {
+pub fn mdbx_key_from_int32(@"i32": i32) callconv(.c) u32 {
     _ = &@"i32";
     return @as(c_uint, 2147483648) +% @as(c_uint, @bitCast(@"i32"));
 }
@@ -1250,7 +1250,7 @@ pub const MDBX_DBI_CREAT: c_int = 8;
 pub const enum_MDBX_dbi_state = c_uint;
 pub const MDBX_dbi_state_t = enum_MDBX_dbi_state;
 pub extern fn mdbx_dbi_flags_ex(txn: ?*const MDBX_txn, dbi: MDBX_dbi, flags: [*c]c_uint, state: [*c]c_uint) c_int;
-pub fn mdbx_dbi_flags(arg_txn: ?*const MDBX_txn, arg_dbi: MDBX_dbi, arg_flags: [*c]c_uint) callconv(.C) c_int {
+pub fn mdbx_dbi_flags(arg_txn: ?*const MDBX_txn, arg_dbi: MDBX_dbi, arg_flags: [*c]c_uint) callconv(.c) c_int {
     var txn = arg_txn;
     _ = &txn;
     var dbi = arg_dbi;
@@ -1268,7 +1268,7 @@ pub extern fn mdbx_get_ex(txn: ?*const MDBX_txn, dbi: MDBX_dbi, key: [*c]MDBX_va
 pub extern fn mdbx_get_equal_or_great(txn: ?*const MDBX_txn, dbi: MDBX_dbi, key: [*c]MDBX_val, data: [*c]MDBX_val) c_int;
 pub extern fn mdbx_put(txn: ?*MDBX_txn, dbi: MDBX_dbi, key: [*c]const MDBX_val, data: [*c]MDBX_val, flags: MDBX_put_flags_t) c_int;
 pub extern fn mdbx_replace(txn: ?*MDBX_txn, dbi: MDBX_dbi, key: [*c]const MDBX_val, new_data: [*c]MDBX_val, old_data: [*c]MDBX_val, flags: MDBX_put_flags_t) c_int;
-pub const MDBX_preserve_func = ?*const fn (?*anyopaque, [*c]MDBX_val, ?*const anyopaque, usize) callconv(.C) c_int;
+pub const MDBX_preserve_func = ?*const fn (?*anyopaque, [*c]MDBX_val, ?*const anyopaque, usize) callconv(.c) c_int;
 pub extern fn mdbx_replace_ex(txn: ?*MDBX_txn, dbi: MDBX_dbi, key: [*c]const MDBX_val, new_data: [*c]MDBX_val, old_data: [*c]MDBX_val, flags: MDBX_put_flags_t, preserver: MDBX_preserve_func, preserver_context: ?*anyopaque) c_int;
 pub extern fn mdbx_del(txn: ?*MDBX_txn, dbi: MDBX_dbi, key: [*c]const MDBX_val, data: [*c]const MDBX_val) c_int;
 pub extern fn mdbx_cursor_create(context: ?*anyopaque) ?*MDBX_cursor;
@@ -1287,7 +1287,7 @@ pub extern fn mdbx_cursor_copy(src: ?*const MDBX_cursor, dest: ?*MDBX_cursor) c_
 pub extern fn mdbx_cursor_compare(left: ?*const MDBX_cursor, right: ?*const MDBX_cursor, ignore_multival: bool) c_int;
 pub extern fn mdbx_cursor_get(cursor: ?*MDBX_cursor, key: [*c]MDBX_val, data: [*c]MDBX_val, op: MDBX_cursor_op) c_int;
 pub extern fn mdbx_cursor_ignord(cursor: ?*MDBX_cursor) c_int;
-pub const MDBX_predicate_func = fn (?*anyopaque, [*c]MDBX_val, [*c]MDBX_val, ?*anyopaque) callconv(.C) c_int;
+pub const MDBX_predicate_func = fn (?*anyopaque, [*c]MDBX_val, [*c]MDBX_val, ?*anyopaque) callconv(.c) c_int;
 pub extern fn mdbx_cursor_scan(cursor: ?*MDBX_cursor, predicate: ?*const MDBX_predicate_func, context: ?*anyopaque, start_op: MDBX_cursor_op, turn_op: MDBX_cursor_op, arg: ?*anyopaque) c_int;
 pub extern fn mdbx_cursor_scan_from(cursor: ?*MDBX_cursor, predicate: ?*const MDBX_predicate_func, context: ?*anyopaque, from_op: MDBX_cursor_op, from_key: [*c]MDBX_val, from_value: [*c]MDBX_val, turn_op: MDBX_cursor_op, arg: ?*anyopaque) c_int;
 pub extern fn mdbx_cursor_get_batch(cursor: ?*MDBX_cursor, count: [*c]usize, pairs: [*c]MDBX_val, limit: usize, op: MDBX_cursor_op) c_int;
@@ -1308,13 +1308,13 @@ pub extern fn mdbx_cmp(txn: ?*const MDBX_txn, dbi: MDBX_dbi, a: [*c]const MDBX_v
 pub extern fn mdbx_get_keycmp(flags: MDBX_db_flags_t) ?*const MDBX_cmp_func;
 pub extern fn mdbx_dcmp(txn: ?*const MDBX_txn, dbi: MDBX_dbi, a: [*c]const MDBX_val, b: [*c]const MDBX_val) c_int;
 pub extern fn mdbx_get_datacmp(flags: MDBX_db_flags_t) ?*const MDBX_cmp_func;
-pub const MDBX_reader_list_func = fn (?*anyopaque, c_int, c_int, mdbx_pid_t, mdbx_tid_t, u64, u64, usize, usize) callconv(.C) c_int;
+pub const MDBX_reader_list_func = fn (?*anyopaque, c_int, c_int, mdbx_pid_t, mdbx_tid_t, u64, u64, usize, usize) callconv(.c) c_int;
 pub extern fn mdbx_reader_list(env: ?*const MDBX_env, func: ?*const MDBX_reader_list_func, ctx: ?*anyopaque) c_int;
 pub extern fn mdbx_reader_check(env: ?*MDBX_env, dead: [*c]c_int) c_int;
 pub extern fn mdbx_txn_straggler(txn: ?*const MDBX_txn, percent: [*c]c_int) c_int;
 pub extern fn mdbx_thread_register(env: ?*const MDBX_env) c_int;
 pub extern fn mdbx_thread_unregister(env: ?*const MDBX_env) c_int;
-pub const MDBX_hsr_func = fn (?*const MDBX_env, ?*const MDBX_txn, mdbx_pid_t, mdbx_tid_t, u64, c_uint, usize, c_int) callconv(.C) c_int;
+pub const MDBX_hsr_func = fn (?*const MDBX_env, ?*const MDBX_txn, mdbx_pid_t, mdbx_tid_t, u64, c_uint, usize, c_int) callconv(.c) c_int;
 pub extern fn mdbx_env_set_hsr(env: ?*MDBX_env, hsr_callback: ?*const MDBX_hsr_func) c_int;
 pub extern fn mdbx_env_get_hsr(env: ?*const MDBX_env) ?*const MDBX_hsr_func;
 pub extern fn mdbx_txn_lock(env: ?*MDBX_env, dont_wait: bool) c_int;
@@ -1466,23 +1466,23 @@ pub const struct_MDBX_chk_line = extern struct {
 pub const MDBX_chk_line_t = struct_MDBX_chk_line;
 pub const MDBX_chk_context_t = struct_MDBX_chk_context;
 pub const struct_MDBX_chk_callbacks = extern struct {
-    check_break: ?*const fn ([*c]MDBX_chk_context_t) callconv(.C) bool = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t) callconv(.C) bool),
-    scope_push: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) c_int),
-    scope_conclude: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, c_int) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, c_int) callconv(.C) c_int),
-    scope_pop: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t) callconv(.C) void),
-    issue: ?*const fn ([*c]MDBX_chk_context_t, [*c]const u8, u64, [*c]const u8, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const u8, u64, [*c]const u8, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) void),
-    table_filter: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_val, MDBX_db_flags_t) callconv(.C) ?*MDBX_chk_user_table_cookie_t = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_val, MDBX_db_flags_t) callconv(.C) ?*MDBX_chk_user_table_cookie_t),
-    table_conclude: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, ?*MDBX_cursor, c_int) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, ?*MDBX_cursor, c_int) callconv(.C) c_int),
-    table_dispose: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t) callconv(.C) void),
-    table_handle_kv: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, usize, [*c]const MDBX_val, [*c]const MDBX_val) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, usize, [*c]const MDBX_val, [*c]const MDBX_val) callconv(.C) c_int),
-    stage_begin: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t) callconv(.C) c_int),
-    stage_end: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t, c_int) callconv(.C) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t, c_int) callconv(.C) c_int),
-    print_begin: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_severity_t) callconv(.C) [*c]MDBX_chk_line_t = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_severity_t) callconv(.C) [*c]MDBX_chk_line_t),
-    print_flush: ?*const fn ([*c]MDBX_chk_line_t) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t) callconv(.C) void),
-    print_done: ?*const fn ([*c]MDBX_chk_line_t) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t) callconv(.C) void),
-    print_chars: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, usize) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, usize) callconv(.C) void),
-    print_format: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.C) void),
-    print_size: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, u64, [*c]const u8) callconv(.C) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, u64, [*c]const u8) callconv(.C) void),
+    check_break: ?*const fn ([*c]MDBX_chk_context_t) callconv(.c) bool = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t) callconv(.c) bool),
+    scope_push: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) c_int),
+    scope_conclude: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, c_int) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t, c_int) callconv(.c) c_int),
+    scope_pop: ?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]MDBX_chk_scope_t, [*c]MDBX_chk_scope_t) callconv(.c) void),
+    issue: ?*const fn ([*c]MDBX_chk_context_t, [*c]const u8, u64, [*c]const u8, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const u8, u64, [*c]const u8, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) void),
+    table_filter: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_val, MDBX_db_flags_t) callconv(.c) ?*MDBX_chk_user_table_cookie_t = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_val, MDBX_db_flags_t) callconv(.c) ?*MDBX_chk_user_table_cookie_t),
+    table_conclude: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, ?*MDBX_cursor, c_int) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, ?*MDBX_cursor, c_int) callconv(.c) c_int),
+    table_dispose: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t) callconv(.c) void),
+    table_handle_kv: ?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, usize, [*c]const MDBX_val, [*c]const MDBX_val) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, [*c]const MDBX_chk_table_t, usize, [*c]const MDBX_val, [*c]const MDBX_val) callconv(.c) c_int),
+    stage_begin: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t) callconv(.c) c_int),
+    stage_end: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t, c_int) callconv(.c) c_int = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_stage_t, c_int) callconv(.c) c_int),
+    print_begin: ?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_severity_t) callconv(.c) [*c]MDBX_chk_line_t = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_context_t, MDBX_chk_severity_t) callconv(.c) [*c]MDBX_chk_line_t),
+    print_flush: ?*const fn ([*c]MDBX_chk_line_t) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t) callconv(.c) void),
+    print_done: ?*const fn ([*c]MDBX_chk_line_t) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t) callconv(.c) void),
+    print_chars: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, usize) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, usize) callconv(.c) void),
+    print_format: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, [*c]struct___va_list_tag_1) callconv(.c) void),
+    print_size: ?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, u64, [*c]const u8) callconv(.c) void = @import("std").mem.zeroes(?*const fn ([*c]MDBX_chk_line_t, [*c]const u8, u64, [*c]const u8) callconv(.c) void),
 };
 pub const MDBX_chk_callbacks_t = struct_MDBX_chk_callbacks;
 pub extern fn mdbx_env_chk(env: ?*MDBX_env, cb: [*c]const MDBX_chk_callbacks_t, ctx: [*c]MDBX_chk_context_t, flags: MDBX_chk_flags_t, verbosity: MDBX_chk_severity_t, timeout_seconds_16dot16: c_uint) c_int;
