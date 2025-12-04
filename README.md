@@ -1,8 +1,8 @@
 # lmdbx-zig
 
-Zig bindings for [libMDBX](https://libmdbx.dqdkfa.ru/) (a fork of LMDB), mostly ported from [zig-lmdb](https://github.com/canvasxyz/zig-lmdb).
+Zig bindings for [libMDBX](https://libmdbx.dqdkfa.ru/) (a fork of LMDB).
 
-Built and tested with Zig version `0.14.0`.
+Built and tested with Zig version `0.15.2`.
 
 > _libmdbx_ is an extremely fast, compact, powerful, embedded, transactional [key-value database](https://en.wikipedia.org/wiki/Key-value_database) with a specific set of properties and capabilities,
 > focused on creating unique lightweight solutions.
@@ -25,7 +25,7 @@ out-of-the-box, not silently and catastrophically break down.
 ## Installation
 
 ```bash
-# replace {VERSION} with the latest release eg: v0.1.0
+# replace {VERSION} with the latest release eg: v0.2.3
 zig fetch https://github.com/theseyan/lmdbx-zig/archive/refs/tags/{VERSION}.tar.gz
 ```
 

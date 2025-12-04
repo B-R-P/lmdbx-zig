@@ -1,11 +1,11 @@
 .{
     .name = .lmdbx,
     .fingerprint = 0x1567d158ce2f525a,
-    .version = "0.1.2",
-    .minimum_zig_version = "0.14.0",
+    .version = "0.2.3",
+    .minimum_zig_version = "0.15.2",
 
     .dependencies = .{
-        // libmdbx C library, 0.13.5
+        // libmdbx C library, 0.14.1
         .mdbx = .{ .url = "https://libmdbx.dqdkfa.ru/release/libmdbx-amalgamated-0.14.1.tar.xz", .hash = "N-V-__8AAIzzNwBcWaOwMMMoxu0xyd8cin1JI1BpMe1_1AVn" },
 
         // We need this until https://github.com/ziglang/zig/pull/20081 gets merged

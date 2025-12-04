@@ -1,33 +1,21 @@
 const std = @import("std");
-const builtin = @import("builtin");
 
 pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{});
+    var target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const IS_DEV = if (optimize == .Debug) true else false;
 
-    // Whether the target has avx512bw support
-    const has_avx512 = comptime builtin.cpu.features.isEnabled(@intFromEnum(std.Target.x86.Feature.avx512bw));
-
-    // For x86 target, we need .evex512 features explicitly because of a Zig compiler bug.
-    // Relevant issue: https://github.com/ziglang/zig/issues/20414
-    // If target doesn't support avx512bw, disable SIMD optimizations completely.
-    // aarch64 always has NEON.
-    const target_query = b.resolveTargetQuery(std.Target.Query{
-        .cpu_arch = target.result.cpu.arch,
-        .os_tag = target.result.os.tag,
-        .abi = target.result.abi,
-        .cpu_features_add = switch (target.result.cpu.arch) {
-            .x86_64 => blk: {
-                if (!has_avx512) std.debug.print("Building without SIMD optimizations as target doesn't support avx512bw. This is a Zig compiler bug to be fixed in 0.14.\n", .{});
-
-                break :blk std.Target.x86.featureSet(&[_]std.Target.x86.Feature{if (has_avx512) .evex512 else break :blk std.Target.Cpu.Feature.Set.empty});
-            },
-            .aarch64 => target.result.cpu.features,
-            else => std.Target.Cpu.Feature.Set.empty, // Unknown CPU
-        },
-    });
+    // For Linux GNU targets, always target glibc 2.31 for broad compatibility
+    if (target.result.os.tag == .linux and target.result.abi == .gnu) {
+        target = b.resolveTargetQuery(.{
+            .cpu_arch = target.result.cpu.arch,
+            .os_tag = .linux,
+            .abi = .gnu,
+            .os_version_min = .{ .semver = std.SemanticVersion{ .major = 2, .minor = 31, .patch = 0 } },
+            .glibc_version = std.SemanticVersion{ .major = 2, .minor = 31, .patch = 0 },
+        });
+    }
 
     const mdbx = b.addModule("lmdbx", .{ .root_source_file = b.path("src/lib.zig") });
 
@@ -77,8 +65,9 @@ pub fn build(b: *std.Build) void {
             if (IS_DEV) "-DMDBX_DEBUG=2" else "-DMDBX_DEBUG=0",
             if (IS_DEV) "-DMDBX_BUILD_FLAGS=\"UNDEBUG\"" else "-DMDBX_BUILD_FLAGS=\"DNDEBUG=1\"",
 
-            // Disable SIMD optimizations if x86 and avx512bw not supported
-            if (target.result.cpu.arch == .x86_64 and !has_avx512) "-DMDBX_HAVE_BUILTIN_CPU_SUPPORTS=0" else "",
+            // Fix for LLVM 19+ requiring evex512 for AVX-512 512-bit intrinsics (Zig 0.13+)
+            // See: https://github.com/ziglang/zig/issues/20414
+            if (target.result.cpu.arch == .x86_64) "-includemdbx_avx512_fix.h" else "",
 
             // Cross compilation to windows breaks without "errno.h"
             if (target.result.os.tag == .windows) "-includeerrno.h" else "",
@@ -96,29 +85,34 @@ pub fn build(b: *std.Build) void {
     });
 
     mdbx.pic = true; // Enforce PIC
-    mdbx.sanitize_c = false; // Address sanitization breaks libMDBX
+    mdbx.sanitize_c = .off; // Address sanitization breaks libMDBX
 
     // Tests
-    const tests = b.addTest(.{
+    const test_mod = b.createModule(.{
         .root_source_file = b.path("test/main.zig"),
-        .target = target_query,
+        .target = target,
+        .link_libc = true,
+        .imports = &.{.{ .name = "lmdbx", .module = mdbx }},
     });
-    tests.linkLibC();
-    tests.root_module.addImport("lmdbx", mdbx);
+    const tests = b.addTest(.{
+        .root_module = test_mod,
+    });
     const test_runner = b.addRunArtifact(tests);
 
     b.step("test", "Run libMDBX tests").dependOn(&test_runner.step);
 
     // Benchmarks
+    const bench_mod = b.createModule(.{
+        .root_source_file = b.path("benchmarks/main.zig"),
+        .target = target,
+        .optimize = if (IS_DEV) .Debug else .ReleaseFast,
+        .link_libc = true,
+        .imports = &.{.{ .name = "lmdbx", .module = mdbx }},
+    });
     const bench = b.addExecutable(.{
         .name = "lmdbx-benchmark",
-        .root_source_file = b.path("benchmarks/main.zig"),
-        .optimize = if (IS_DEV) .Debug else .ReleaseFast,
-        .target = target_query,
+        .root_module = bench_mod,
     });
-
-    bench.linkLibC();
-    bench.root_module.addImport("lmdbx", mdbx);
 
     b.installArtifact(bench);
 

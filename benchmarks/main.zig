@@ -9,30 +9,36 @@ var random = prng.random();
 
 const ms: f64 = 1_000_000.0;
 
-pub fn main() !void {
-    const log = std.io.getStdOut().writer();
+var stdout_buffer: [4096]u8 = undefined;
 
-    _ = try log.write("## Benchmarks\n\n");
-    try Context.exec("1k entries", 1_000, log, .{
+pub fn main() !void {
+    var log = std.fs.File.stdout().writer(&stdout_buffer);
+
+    _ = try log.interface.write("## Benchmarks\n\n");
+    try Context.exec("1k entries", 1_000, &log.interface, .{
         .lifo_reclaim = false,
         .exclusive = true,
     });
-    _ = try log.write("\n");
-    try Context.exec("50k entries", 50_000, log, .{
+    try log.interface.flush();
+    _ = try log.interface.write("\n");
+    try Context.exec("50k entries", 50_000, &log.interface, .{
         .lifo_reclaim = false,
         .exclusive = true,
     });
-    _ = try log.write("\n");
-    try Context.exec("1m entries", 1_000_000, log, .{
+    try log.interface.flush();
+    _ = try log.interface.write("\n");
+    try Context.exec("1m entries", 1_000_000, &log.interface, .{
         .lifo_reclaim = false,
         .exclusive = true,
     });
-    _ = try log.write("\n");
-    try Context.exec("1m entries with LIFO", 1_000_000, log, .{
+    try log.interface.flush();
+    _ = try log.interface.write("\n");
+    try Context.exec("1m entries with LIFO", 1_000_000, &log.interface, .{
         .lifo_reclaim = true,
         .exclusive = true,
     });
-    _ = try log.write("\n");
+    _ = try log.interface.write("\n");
+    try log.interface.flush();
 }
 
 var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
@@ -47,9 +53,9 @@ const Context = struct {
     env: lmdb.Environment,
     name: []const u8,
     size: u32,
-    log: std.fs.File.Writer,
+    log: *std.Io.Writer,
 
-    pub fn exec(name: []const u8, size: u32, log: std.fs.File.Writer, options: lmdb.Environment.Options) !void {
+    pub fn exec(name: []const u8, size: u32, log: *std.Io.Writer, options: lmdb.Environment.Options) !void {
         var tmp = std.testing.tmpDir(.{});
         defer tmp.cleanup();
 
