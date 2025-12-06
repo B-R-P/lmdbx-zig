@@ -1,21 +1,33 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn build(b: *std.Build) void {
-    var target = b.standardTargetOptions(.{});
+    const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const IS_DEV = if (optimize == .Debug) true else false;
 
-    // For Linux GNU targets, always target glibc 2.31 for broad compatibility
-    if (target.result.os.tag == .linux and target.result.abi == .gnu) {
-        target = b.resolveTargetQuery(.{
-            .cpu_arch = target.result.cpu.arch,
-            .os_tag = .linux,
-            .abi = .gnu,
-            .os_version_min = .{ .semver = std.SemanticVersion{ .major = 2, .minor = 31, .patch = 0 } },
-            .glibc_version = std.SemanticVersion{ .major = 2, .minor = 31, .patch = 0 },
-        });
-    }
+    // Whether the target has avx512bw support
+    const has_avx512 = comptime builtin.cpu.features.isEnabled(@intFromEnum(std.Target.x86.Feature.avx512bw));
+
+    // For x86 target, we need .evex512 features explicitly because of a Zig compiler bug.
+    // Relevant issue: https://github.com/ziglang/zig/issues/20414
+    // If target doesn't support avx512bw, disable SIMD optimizations completely.
+    // aarch64 always has NEON.
+    const target_query = b.resolveTargetQuery(std.Target.Query{
+        .cpu_arch = target.result.cpu.arch,
+        .os_tag = target.result.os.tag,
+        .abi = target.result.abi,
+        .cpu_features_add = switch (target.result.cpu.arch) {
+            .x86_64 => blk: {
+                if (!has_avx512) std.debug.print("Building without SIMD optimizations as target doesn't support avx512bw. This is a Zig compiler bug to be fixed in 0.14.\n", .{});
+
+                break :blk std.Target.x86.featureSet(&[_]std.Target.x86.Feature{if (has_avx512) .evex512 else break :blk std.Target.Cpu.Feature.Set.empty});
+            },
+            .aarch64 => target.result.cpu.features,
+            else => std.Target.Cpu.Feature.Set.empty, // Unknown CPU
+        },
+    });
 
     const mdbx = b.addModule("lmdbx", .{ .root_source_file = b.path("src/lib.zig") });
 
@@ -46,11 +58,6 @@ pub fn build(b: *std.Build) void {
             "-std=gnu11",
             "-O2",
             "-g",
-            // "-Wall",
-            // These flags are recommended, but breaks Windows compilation
-            // "-Werror",
-            // "-Wextra",
-            // "-Wpedantic",
             "-ffunction-sections",
             "-fvisibility=hidden",
             "-pthread",
@@ -58,24 +65,19 @@ pub fn build(b: *std.Build) void {
             "-fno-semantic-interposition",
             "-Wno-unused-command-line-argument",
             "-Wno-tautological-compare",
+            // Force safe unaligned handling for your toolchain:
+            "-UMDBX_UNALIGNED_OK",        // undef first so header can't set it for you
+            "-DMDBX_UNALIGNED_OK=0",      // force "unaligned not ok" at compile time
+            "-DMDBX_ASSUME_UNALIGNED=1",  // make the code treat pointers as possibly unaligned
+            "-D__unaligned=",             // disable MSVC __unaligned extension usage
+
             "-Wno-date-time",
             "-ULIBMDBX_EXPORTS",
-
-            // Debug features
             if (IS_DEV) "-DMDBX_DEBUG=2" else "-DMDBX_DEBUG=0",
             if (IS_DEV) "-DMDBX_BUILD_FLAGS=\"UNDEBUG\"" else "-DMDBX_BUILD_FLAGS=\"DNDEBUG=1\"",
-
-            // Fix for LLVM 19+ requiring evex512 for AVX-512 512-bit intrinsics (Zig 0.13+)
-            // See: https://github.com/ziglang/zig/issues/20414
-            if (target.result.cpu.arch == .x86_64) "-includemdbx_avx512_fix.h" else "",
-
-            // Cross compilation to windows breaks without "errno.h"
+            if (target.result.cpu.arch == .x86_64 and !has_avx512) "-DMDBX_HAVE_BUILTIN_CPU_SUPPORTS=0" else "",
             if (target.result.os.tag == .windows) "-includeerrno.h" else "",
-
-            // We don't link with MSVC CRT
             if (target.result.os.tag == .windows) "-DMDBX_WITHOUT_MSVC_CRT=1" else "",
-
-            // Link libraries
             switch (target.result.os.tag) {
                 .windows => "-lm -lntdll -lwinmm -luser32 -lkernel32 -ladvapi32 -lole32",
                 .macos, .openbsd => "-lm",
@@ -84,35 +86,36 @@ pub fn build(b: *std.Build) void {
         },
     });
 
+
     mdbx.pic = true; // Enforce PIC
-    mdbx.sanitize_c = .off; // Address sanitization breaks libMDBX
+    mdbx.sanitize_c = null; // Address sanitization breaks libMDBX
 
     // Tests
-    const test_mod = b.createModule(.{
-        .root_source_file = b.path("test/main.zig"),
-        .target = target,
-        .link_libc = true,
-        .imports = &.{.{ .name = "lmdbx", .module = mdbx }},
-    });
     const tests = b.addTest(.{
-        .root_module = test_mod,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("test/main.zig"),
+            .target = target_query,
+        }),
     });
+    tests.linkLibC();
+    tests.root_module.addImport("lmdbx", mdbx);
     const test_runner = b.addRunArtifact(tests);
 
     b.step("test", "Run libMDBX tests").dependOn(&test_runner.step);
 
     // Benchmarks
-    const bench_mod = b.createModule(.{
-        .root_source_file = b.path("benchmarks/main.zig"),
-        .target = target,
-        .optimize = if (IS_DEV) .Debug else .ReleaseFast,
-        .link_libc = true,
-        .imports = &.{.{ .name = "lmdbx", .module = mdbx }},
-    });
     const bench = b.addExecutable(.{
         .name = "lmdbx-benchmark",
-        .root_module = bench_mod,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("benchmarks/main.zig"),
+            .target = target_query,
+            .optimize = if (IS_DEV) .Debug else .ReleaseFast, // moved here
+        }),
     });
+
+
+    bench.linkLibC();
+    bench.root_module.addImport("lmdbx", mdbx);
 
     b.installArtifact(bench);
 

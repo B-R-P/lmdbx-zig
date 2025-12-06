@@ -357,12 +357,8 @@ fn recursiveDeserialize(
 }
 
 fn makeMutableSlice(comptime T: type, slice: []const T) []T {
-    if (slice.len == 0) {
-        var buf: [0]T = .{};
-        return &buf;
-    } else {
-        return @as([*]T, @constCast(slice.ptr))[0..slice.len];
-    }
+    if (slice.len == 0) return &[_]T{};
+    return @constCast(slice)[0..];
 }
 
 fn recursiveFree(allocator: std.mem.Allocator, comptime T: type, value: *T) void {
