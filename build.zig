@@ -86,7 +86,7 @@ pub fn build(b: *std.Build) void {
 
 
     mdbx.pic = true; // Enforce PIC
-    mdbx.sanitize_c = null; // Address sanitization breaks libMDBX
+    mdbx.sanitize_c = .off; // Address sanitization breaks libMDBX
 
     // Tests
     const tests = b.addTest(.{
