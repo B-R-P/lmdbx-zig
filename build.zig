@@ -65,14 +65,12 @@ pub fn build(b: *std.Build) void {
             "-fno-semantic-interposition",
             "-Wno-unused-command-line-argument",
             "-Wno-tautological-compare",
-            // Force safe unaligned handling for your toolchain:
-            "-UMDBX_UNALIGNED_OK",        // undef first so header can't set it for you
-            "-DMDBX_UNALIGNED_OK=0",      // force "unaligned not ok" at compile time
-            "-DMDBX_ASSUME_UNALIGNED=1",  // make the code treat pointers as possibly unaligned
-            "-D__unaligned=",             // disable MSVC __unaligned extension usage
-
             "-Wno-date-time",
             "-ULIBMDBX_EXPORTS",
+            // FIX: On x86_64 Linux, unaligned access IS supported by hardware. 
+            // Force MDBX_UNALIGNED_OK=8 to use direct aligned stores and bypass
+            // the broken __unaligned fallback path entirely.
+            "-DMDBX_UNALIGNED_OK=8",
             if (IS_DEV) "-DMDBX_DEBUG=2" else "-DMDBX_DEBUG=0",
             if (IS_DEV) "-DMDBX_BUILD_FLAGS=\"UNDEBUG\"" else "-DMDBX_BUILD_FLAGS=\"DNDEBUG=1\"",
             if (target.result.cpu.arch == .x86_64 and !has_avx512) "-DMDBX_HAVE_BUILTIN_CPU_SUPPORTS=0" else "",
